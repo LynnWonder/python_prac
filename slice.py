@@ -1,3 +1,4 @@
+# tip 切片不会改变原来的 list
 ll = []
 n = 0
 # while n < 20:

@@ -50,3 +50,6 @@
 
 ## todo
 1. 关于 hashtable  https://www.liaoxuefeng.com/wiki/1016959663602400/1017104324028448#0
+2. 使用 python 实现排序算法
+3. ~~使用 python 实现 fib~~ 
+4. 使用 Python 实现杨辉三角
