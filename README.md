@@ -1,7 +1,5 @@
 # Django_prac
-
-polls 目录是跟业务相关的：创建一个投票应用
-
+> 项目内容是根据 https://docs.djangoproject.com/zh-hans/3.2 示例 demo 做的一个投票应用
 ## 项目目录
 ```shell
 mysite/
@@ -12,7 +10,18 @@ mysite/
         urls.py # Django 项目的 URL 声明，就像你网站的“目录”，可以理解成路由目录
         asgi.py # 
         wsgi.py
+    polls/ #跟业务相关的：创建一个投票应用    
 ```
+
+## MTV 设计模式
+[关于 MTV 模式](https://blog.csdn.net/dbanote/article/details/11338953)
+
+M: Model 负责业务对象和数据库的关系映射([ORM](https://zhuanlan.zhihu.com/p/27188788)，对象关系映射，
+直白来说就是我在程序中定义一个对象就对应一个表，这个对象的一个实例即对应表中的一条记录)。
+
+T: Template 负责如何把页面展示给用户
+
+V: View 负责业务逻辑，视图函数的执行结果只可能有两种，返回一个可以是任何内容的 HttpResponse 对象，另一个就是 Http404 这类的异常。
 
 ### 改变模型
 改变模型需要这三步：
@@ -26,8 +35,6 @@ mysite/
 
 admin 123456
 ## Q&A
-1. 视图是什么，各个文件夹或者说文件的具体作用是什么
-感觉更像是 controller 
 2. on_delete=models.CASCADE 什么意思
 3. 如何返回 json 类型数据，而不是字符串
 
