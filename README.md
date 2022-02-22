@@ -12,7 +12,10 @@ mysite/
         wsgi.py
     polls/ #跟业务相关的：创建一个投票应用    
 ```
-
+### 项目中的 packages
+```shell
+pip list --format=freeze > requirements.txt
+```
 ## MTV 设计模式
 [关于 MTV 模式](https://blog.csdn.net/dbanote/article/details/11338953)
 
