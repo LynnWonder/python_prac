@@ -1,0 +1,11 @@
+{% if latest_question_list %}
+    <ul>
+    {% for question in latest_question_list %}
+<!--        <li><a href="/polls/{{ question.id }}/">{{ question.question_text }}</a></li>-->
+<!--        上面的代码 hard code 了，于是优化到下面这种 detail 对应 urls.py 中的 name-->
+        <li><a href="{% url 'polls:detail' question.id %}">{{ question.question_text }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No polls are available.</p>
+{% endif %}

@@ -14,6 +14,7 @@ from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 # tip __file__ is a variable that contains the path to the module that is currently being imported.
+#  指的是外层 mysite 所在的绝对地址
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
@@ -31,7 +32,10 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
+# TIP 执行 python manage.py migrate 会检查 INSTALLED_APPS 为其中每一个应用创建需要的表
+#   比如添加了 polls.apps.PollsConfig
 INSTALLED_APPS = [
+    'polls.apps.PollsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
