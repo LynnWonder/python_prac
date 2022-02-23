@@ -16,6 +16,12 @@ mysite/
 ```shell
 pip list --format=freeze > requirements.txt
 ```
+
+> tips
+> 原本项目放在 mysite 下，进行了如下调整
+> `mv mysite test` 将 mysite 文件夹重命名为 test
+> `mv test ./` 将 test 目录下的所有内容移动到当前根目录下
+> `rm test/`  删除 test 文件夹
 ## MTV 设计模式
 [关于 MTV 模式](https://blog.csdn.net/dbanote/article/details/11338953)
 
