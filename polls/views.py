@@ -90,7 +90,7 @@ class IndexView(generic.ListView):
     #  为了覆盖这个行为，我们提供 context_object_name 属性，表示我们想使用 latest_question_list。
     context_object_name = 'latest_question_list'
 
-    # 这难道是一个覆盖函数吗
+    # ques 这难道是一个覆盖函数吗
     def get_queryset(self):
         """Return the last five published questions."""
         return Question.objects.order_by('-pub_date')[:5]

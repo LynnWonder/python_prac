@@ -15,10 +15,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from rest_framework import routers, serializers, viewsets
 
+router = routers.DefaultRouter()
 # tip 根 URLconf，配置所有路由
 #
 urlpatterns = [
+    # 通过 URL 自动路由来给我们的 API 布局
+    path('', include(router.urls)),
     path('polls/', include('polls.urls')),
+    path('snippets/', include('snippets.urls')),
     path('admin/', admin.site.urls),
 ]

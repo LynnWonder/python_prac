@@ -17,7 +17,7 @@ class Question(models.Model):
     pub_date = models.DateTimeField('date published')
 
     # 因为实例没有 question_text 属性，会继续向上找类，直到找到类属性
-    # tip 这里其实是覆盖 __str__ 函数吧我猜
+    # tip 这里其实是覆盖 __str__ 函数
     def __str__(self):
         return self.question_text
 

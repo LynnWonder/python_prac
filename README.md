@@ -1,5 +1,22 @@
 # Django_prac
 > 项目内容是根据 https://docs.djangoproject.com/zh-hans/3.2 示例 demo 做的一个投票应用
+> 
+## 项目启动
+```shell
+# 创建环境
+python -m venv venv
+
+# 安装依赖
+pip install -r requirements.txt
+
+# 检查 INSTALLED_APPS 为其中的应用创建需要的数据表
+python manage.py migrate
+
+# django 会检测模型文件的修改，将修改的部分存储为一次迁移。执行下面的指令可以选中还没有执行过的迁移
+# 并应用到数据库上
+
+python manage.py migrate
+```
 ## 项目目录
 ```shell
 mysite/
@@ -32,11 +49,11 @@ T: Template 负责如何把页面展示给用户
 
 V: View 负责业务逻辑，视图函数的执行结果只可能有两种，返回一个可以是任何内容的 HttpResponse 对象，另一个就是 Http404 这类的异常。
 
-### 改变模型
-改变模型需要这三步：
+### 开发流程
+> 开发流程主要就是生成、改变模型，主要需要这三步：
 
 - 编辑 models.py 文件，改变模型。
-- 运行 python manage.py makemigrations 为模型的改变生成迁移文件。（通过运行 makemigrations 命令，Django 会检测你对模型文件的修改（在这种情况下，你已经取得了新的），并且把修改的部分储存为一次 迁移。）
+- 运行 python manage.py makemigrations xx 为模型的改变生成迁移文件。（通过运行 makemigrations 命令，Django 会检测你对模型文件的修改（在这种情况下，你已经取得了新的），并且把修改的部分储存为一次 迁移。）
 - 运行 python manage.py migrate 来应用数据库迁移。
 
 数据库迁移被分解成生成和应用两个命令是为了让你能够在代码控制系统上提交迁移数据并使其能在多个应用里使用； 
