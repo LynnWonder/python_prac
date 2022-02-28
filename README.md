@@ -15,7 +15,7 @@ python manage.py migrate
 # django 会检测模型文件的修改，将修改的部分存储为一次迁移。执行下面的指令可以选中还没有执行过的迁移
 # 并应用到数据库上
 
-python manage.py migrate
+python manage.py makemigrations polls
 ```
 ## 项目目录
 ```shell
