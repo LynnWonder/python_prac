@@ -93,9 +93,37 @@ def snippet_detail(request, pk):
 
 from rest_framework.views import APIView
 from django.http import Http404
+from django.contrib.auth.models import User
+from snippets.serializers import UserSerializer
+from rest_framework import permissions
+from snippets.permissions import IsOwnerOrReadOnly
+
+
+class UserList(APIView):
+    def get(self, request, format=None):
+        users = User.objects.all()
+        serializer = UserSerializer(users, many=True)
+        return Response(serializer.data)
+
+
+class UserDetail(APIView):
+    def get_object(self, pk):
+        try:
+            return User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        # tip 实践证明我们可以在调用函数的时候像使用关键字参数一样传入参数
+        #   即便原函数没有关键字参数 **kwargs 或者命名关键字参数(以 * 分隔的关键字参数)
+        user = self.get_object(pk=pk)
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
 
 
 class SnippetList(APIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
     def get(self, request, format=None):
         snippets = Snippet.objects.all()
         serializer = SnippetSerializer(snippets, many=True)
@@ -104,15 +132,23 @@ class SnippetList(APIView):
     def post(self, request, format=None):
         serializer = SnippetSerializer(data=request.data)
         if serializer.is_valid():
+            serializer.save(owner=self.request.user)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.error, status=status.HTTP_400_BAD_REQUEST)
+
+    # 参照文档内容是这样添加的，不过无法跑通，参考 https://stackoverflow.com/questions/27138601/rest-framework-tutorial-integrityerror-creating-snippets
+    # 直接注释掉了这部分内容然后在上面 post 方法中添加了 owner
+    # def perform_create(self, serializer):
+    #     serializer.save(owner=self.request.user)
 
 
 class SnippetDetail(APIView):
     """
     检索，更新或删除一个snippet示例。
     """
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly,
+                          IsOwnerOrReadOnly]
 
     def get_object(self, pk):
         try:

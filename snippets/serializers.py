@@ -1,6 +1,8 @@
+import serializer as serializer
 from rest_framework import serializers
 # tip 从 models 中引入这几个变量
 from snippets.models import Snippet, LANGUAGE_CHOICES
+from django.contrib.auth.models import User
 
 
 # class SnippetSerializer(serializers.Serializer):
@@ -31,6 +33,21 @@ class SnippetSerializer(serializers.ModelSerializer):
     #  使用 ModelSerializer 类，是创建序列化类的快捷方式
     #  一组自动确定的字段
     #  默认简单实现的 create() 和 update() 方法
+    # 这里标识 username 只能是可读的，只能用于序列化表示，不能用于反序列化更新模型实例
+    owner = serializers.ReadOnlyField(source='owner.username')
+
     class Meta:
         model = Snippet
-        fields = ('id', 'title', 'code', 'linenos', 'language')
+        fields = ('id', 'title', 'code', 'linenos', 'language', 'owner')
+
+
+# 在 api 中添加这些用户的标识，接下来就是创建一个新的关于 user 的序列化器
+class UserSerializer(serializers.ModelSerializer):
+    # 因为 snippets 在用户模型中是一个反向关联的关系，
+    # 在使用 ModelSerializer 类的时候它默认不会被包含
+    # 因此我们需要为它添加一个显式字段
+    snippets = serializers.PrimaryKeyRelatedField(many=True, queryset=Snippet.objects.all())
+
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'snippets')
