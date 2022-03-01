@@ -59,8 +59,30 @@ V: View 负责业务逻辑，视图函数的执行结果只可能有两种，返
 数据库迁移被分解成生成和应用两个命令是为了让你能够在代码控制系统上提交迁移数据并使其能在多个应用里使用； 
 这不仅仅会让开发更加简单，也给别的开发者和生产环境中的使用带来方便。
 
-admin 123456
+### 删除数据表
+```shell
+python manage.py dbshell
+
+drop table dbshell
+
+python manage.py makemigrations snippets
+# https://docs.djangoproject.com/zh-hans/4.0/ref/django-admin/#cmdoption-migrate-fake
+python manage.py migrate --fake snippets zero
+
+# 再执行一次
+python manage.py migrate
+```
+### superuser 
+1. admin 123456 
+2. user1 123456
+
+
 ## Q&A
-2. on_delete=models.CASCADE 什么意思
-3. 如何返回 json 类型数据，而不是字符串
+1. on_delete=models.CASCADE 什么意思
+~~2. 如何返回 json 类型数据，而不是字符串~~
+进行序列化，我们使用 djangorestframework 中的序列化正是解决了这个问题。
+
+同时我们利用 djangorestframework 也实现了简单的 basic auth 将更新数据和用户相关联，
+
+即只有 admin 用户能够「更新」与之对应的代码段
 
