@@ -1,3 +1,7 @@
 .idea
 # python bytecode
 __pycache__/
+
+# environment
+venv/
+db.sqlite3
