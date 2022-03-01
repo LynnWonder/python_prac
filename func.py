@@ -109,5 +109,16 @@ f2(1, 2, d=99, ext=None)
 f2(1, d=99, ext=None)
 # print('mul(0) =', mul())
 print('mul(5) =', mul(5))
+
+
 # print('mul(5, 6) =', mul(5, 6))
 # print('mul(5, 6, 7) =', mul(5, 6, 7))
+
+
+def zzz(x, y):
+    print("输出一个值====>", x)
+    return x / y
+
+
+# tip 通过这里可以发现即便是没有标明命名参数
+zzz(y=1, x=10)
