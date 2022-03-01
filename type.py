@@ -2,7 +2,8 @@
 import types
 from pathlib import Path
 
-# tip type 基本上可以判断大部分对象的类型，除了 class 的类型不太方便一般都是用 isinstance
+# tip isinstance 能够检查一切类型的变量
+#   而 type 基本上可以判断大部分对象的类型，除了 class 的类型。
 #   因此一般优先使用 isinstance
 
 print(type('abc') == str)
