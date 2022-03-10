@@ -1,6 +1,5 @@
 # Django_prac
-> 项目内容是根据 https://docs.djangoproject.com/zh-hans/3.2 示例 demo 做的一个投票应用
-> 
+
 ## 项目启动
 ```shell
 # 创建环境
@@ -9,25 +8,31 @@ python -m venv venv
 # 安装依赖
 pip install -r requirements.txt
 
-# 检查 INSTALLED_APPS 为其中的应用创建需要的数据表
-python manage.py migrate
-
 # django 会检测模型文件的修改，将修改的部分存储为一次迁移。执行下面的指令可以选中还没有执行过的迁移
 # 并应用到数据库上
 
 python manage.py makemigrations polls
+
+# 检查 INSTALLED_APPS 为其中的应用创建需要的数据表
+python manage.py migrate
+
+# 启动项目
+python manage.py runserver
+
 ```
 ## 项目目录
 ```shell
-mysite/
-    manage.py # 一个让你用各种方式管理 Django 项目的命令行工具
-    mysite/
-        __init__.py # 一个空文件，告诉 Python 这个目录应该被认为是一个 Python 包
-        settings.py # Django 项目的配置文件
-        urls.py # Django 项目的 URL 声明，就像你网站的“目录”，可以理解成路由目录
-        asgi.py # 
-        wsgi.py
-    polls/ #跟业务相关的：创建一个投票应用    
+  manage.py # 一个让你用各种方式管理 Django 项目的命令行工具
+  mysite/
+      __init__.py # 一个空文件，告诉 Python 这个目录应该被认为是一个 Python 包
+      settings.py # Django 项目的配置文件
+      urls.py # Django 项目的 URL 声明，就像你网站的“目录”，可以理解成路由目录
+      asgi.py # 
+      wsgi.py
+  apps/ # 跟具体业务相关的应用们
+      polls # 根据 Django 官方文档写的一个投票应用
+      snippets # 根据 drf 官方文档写的一个拥有用户权限的应用
+  .flake8 # flake8 配置文件，用于规范 Python 代码格式，直接运行 `flake8` 会显示哪些文件需要修改
 ```
 ### 项目中的 packages
 ```shell
@@ -55,6 +60,8 @@ V: View 负责业务逻辑，视图函数的执行结果只可能有两种，返
 - 编辑 models.py 文件，改变模型。
 - 运行 python manage.py makemigrations xx 为模型的改变生成迁移文件。（通过运行 makemigrations 命令，Django 会检测你对模型文件的修改（在这种情况下，你已经取得了新的），并且把修改的部分储存为一次 迁移。）
 - 运行 python manage.py migrate 来应用数据库迁移。
+- 修改 views 视图
+- python manage.py runserver
 
 数据库迁移被分解成生成和应用两个命令是为了让你能够在代码控制系统上提交迁移数据并使其能在多个应用里使用； 
 这不仅仅会让开发更加简单，也给别的开发者和生产环境中的使用带来方便。
@@ -71,10 +78,13 @@ python manage.py migrate --fake snippets zero
 
 # 再执行一次
 python manage.py migrate
+
 ```
 ### superuser 
 1. admin 123456 
 2. user1 123456
+3. user2 123456
+4. user3 123456
 
 
 ## Q&A
@@ -86,3 +96,7 @@ python manage.py migrate
 
 即只有 admin 用户能够「更新」与之对应的代码段
 
+## TODO 
+使用 swagger 写 docs
+
+使用 drf openAPI 

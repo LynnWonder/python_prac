@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class SnippetsConfig(AppConfig):
+class PollsConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'snippets'
+    name = 'apps.polls'

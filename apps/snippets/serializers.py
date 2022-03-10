@@ -1,12 +1,12 @@
-import serializer as serializer
 from rest_framework import serializers
 # tip 从 models 中引入这几个变量
-from snippets.models import Snippet, LANGUAGE_CHOICES
+from apps.snippets.models import Snippet
 from django.contrib.auth.models import User
 
 
-# class SnippetSerializer(serializers.Serializer):
+# tip 主要对 model 对象进行序列化，
 class SnippetSerializer(serializers.ModelSerializer):
+    # tip 下面的代码暂不删除
     # id = serializers.IntegerField(read_only=True)
     # title = serializers.CharField(required=False, allow_blank=True, max_length=100)
     # code = serializers.CharField(style={'base_template': 'textarea.html'})
@@ -34,6 +34,7 @@ class SnippetSerializer(serializers.ModelSerializer):
     #  一组自动确定的字段
     #  默认简单实现的 create() 和 update() 方法
     # 这里标识 username 只能是可读的，只能用于序列化表示，不能用于反序列化更新模型实例
+    # 通过 source 来指定需要关联的外键对象的值
     owner = serializers.ReadOnlyField(source='owner.username')
 
     class Meta:

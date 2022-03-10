@@ -28,20 +28,26 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+APPEND_SLASH = False
+
 # Application definition
 
-# TIP 执行 python manage.py migrate 会检查 INSTALLED_APPS 为其中每一个应用创建需要的表
+# tip 执行 python manage.py migrate 会检查 INSTALLED_APPS 为其中每一个应用创建需要的表
 #   比如添加了 polls.apps.PollsConfig
 INSTALLED_APPS = [
-    'rest_framework',
-    'snippets',
-    'polls.apps.PollsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'rest_framework',
+    # tip 为了能够 unregister User 必须将自定义的 apps 写在 Django default apps 下面
+    # https://stackoverflow.com/questions/2342031/remove-default-apps-from-django-admin
+    # custom apps below
+    'apps.snippets',
+    'apps.polls',
 ]
 
 MIDDLEWARE = [
@@ -58,7 +64,7 @@ REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
     'DEFAULT_PERMISSION_CLASSES': [
-        # ques 这里似乎是和 api 权限控制相关的内容，可以后续关注一下
+        # tip 控制 API 的访问权限
         # 'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
         # 'rest_framework.permissions.DjangoModelPermissions'
         'rest_framework.permissions.AllowAny'
@@ -70,7 +76,8 @@ ROOT_URLCONF = 'mysite.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        # TIP 注意这里的根目录填写会影响使用到模板的视图文件中模板位置参数的变动
+        'DIRS': [BASE_DIR / 'apps/polls/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

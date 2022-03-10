@@ -23,8 +23,9 @@ router = routers.DefaultRouter()
 urlpatterns = [
     # 通过 URL 自动路由来给我们的 API 布局
     path('', include(router.urls)),
-    path('polls/', include('polls.urls')),
-    path('snippets/', include('snippets.urls')),
+    path('polls/', include('apps.polls.urls')),
+    path('snippets/', include('apps.snippets.urls')),
+    # tip 根 URLconf，配置 admin 管理路由
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls',
                               namespace='rest_framework')),

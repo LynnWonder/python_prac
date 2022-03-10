@@ -1,21 +1,58 @@
-from django.shortcuts import render
-
 # Create your views here.
-from django.http import HttpResponse
-from django.views.decorators.csrf import csrf_exempt
-from rest_framework.renderers import JSONRenderer
-from rest_framework.parsers import JSONParser
-from snippets.models import Snippet
-from snippets.serializers import SnippetSerializer
-
-# 下面是重构引入的包
-from rest_framework import status
-from rest_framework.decorators import api_view
+# 创建基于类的视图,基于类的视图来编写我们的 API 视图，而不是基于函数的视图，
+# 基于类的视图会允许我们重用常用功能
+from rest_framework import permissions
 # tip REST框架还引入了一个Response对象，这是一种获取未渲染（unrendered）内容的TemplateResponse类型，并使用内容协商来确定返回给客户端的正确内容类型
 from rest_framework.response import Response
+from rest_framework.views import APIView
+# 新使用的 ModelViewSet 类
+from rest_framework.viewsets import ModelViewSet
+
+from apps.snippets.models import Snippet
+from django.contrib.auth.models import User
+from apps.snippets.serializers import (SnippetSerializer, UserSerializer)
+from apps.snippets.permissions import IsOwnerOrReadOnly
+
+# 使用基于函数的视图需要的依赖
+from django.http import (Http404, HttpResponse)
+from rest_framework import status
+from rest_framework.decorators import api_view
 
 
+# tip
+#  继承自各个mixin类和GenericViewSet，所以默认就提供了增删查改等相关方法，使用起来更加方便
+#  使用 ModelViewSet 之后
+class UserViewSet(ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    # tip 可以重写默认的 list 方法来实现
+    # def list
+
+
+class SnippetViewSet(ModelViewSet):
+    queryset = Snippet.objects.all()
+    serializer_class = SnippetSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+
+    # 使用 ModelViewSet 的时候重写 create 方法，比如增加一些参数校验等
+    def create(self, request, *args, **kwargs):
+        # 当使用 ModelViewSet 的时候这样使用
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        instance = serializer.save(owner=self.request.user)
+
+        return Response(SnippetSerializer(instance).data)
+
+    # tip 注意使用 ModelViewSet 的这些默认 CURD 方法时，已经不需要自行定义比如 400 404 这样的状态码
+    # 重写 retrieve 方法（这里实际上并没有重写，只是继承 ModelViewSet 的方法继续使用）
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)
+
+    # update destroy 方法沿用即可
+
+# ---------------------------------------split------------------------------------------------
 # tip 删掉 JSONResponse 类重构我们的视图
+#   但是这里我们还能看到最裸的一个关于 http 响应的内容
 # class JSONResponse(HttpResponse):
 #     """
 #     An HttpResponse that renders its content into JSON.
@@ -88,62 +125,7 @@ def snippet_detail(request, pk):
         return HttpResponse(status=status.HTTP_204_NO_CONTENT)
 
 
-# 继续前进，创建基于类的视图，我们知道我们可以通过上述方式来编写视图了
-# 接下来我们基于类的视图来编写我们的 API 视图，而不是基于函数的视图，基于类的视图会允许我们重用常用功能
-
-from rest_framework.views import APIView
-from django.http import Http404
-from django.contrib.auth.models import User
-from snippets.serializers import UserSerializer
-from rest_framework import permissions
-from snippets.permissions import IsOwnerOrReadOnly
-
-
-class UserList(APIView):
-    def get(self, request, format=None):
-        users = User.objects.all()
-        serializer = UserSerializer(users, many=True)
-        return Response(serializer.data)
-
-
-class UserDetail(APIView):
-    def get_object(self, pk):
-        try:
-            return User.objects.get(pk=pk)
-        except User.DoesNotExist:
-            raise Http404
-
-    def get(self, request, pk, format=None):
-        # tip 实践证明我们可以在调用函数的时候像使用关键字参数一样传入参数
-        #   即便原函数没有关键字参数 **kwargs 或者命名关键字参数(以 * 分隔的关键字参数)
-        user = self.get_object(pk=pk)
-        serializer = UserSerializer(user)
-        return Response(serializer.data)
-
-
-class SnippetList(APIView):
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-
-    def get(self, request, format=None):
-        snippets = Snippet.objects.all()
-        serializer = SnippetSerializer(snippets, many=True)
-        return Response(serializer.data)
-
-    def post(self, request, format=None):
-        serializer = SnippetSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(owner=self.request.user)
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.error, status=status.HTTP_400_BAD_REQUEST)
-
-    # 参照文档内容是这样添加的，不过无法跑通，参考 https://stackoverflow.com/questions/27138601/rest-framework-tutorial-integrityerror-creating-snippets
-    # 直接注释掉了这部分内容然后在上面 post 方法中添加了 owner
-    # def perform_create(self, serializer):
-    #     serializer.save(owner=self.request.user)
-
-
-class SnippetDetail(APIView):
+class SnippetDetailViewSet(APIView):
     """
     检索，更新或删除一个snippet示例。
     """
@@ -156,12 +138,12 @@ class SnippetDetail(APIView):
         except Snippet.DoesNotExist:
             raise Http404
 
-    def get(self, request, pk, format=None):
+    def retrieve(self, request, pk, format=None):
         snippet = self.get_object(pk)
         serializer = SnippetSerializer(snippet)
         return Response(serializer.data)
 
-    def put(self, request, pk, format=None):
+    def update(self, request, pk, format=None):
         snippet = self.get_object(pk)
         serializer = SnippetSerializer(snippet, data=request.data)
         if serializer.is_valid():
@@ -169,7 +151,7 @@ class SnippetDetail(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, pk, format=None):
+    def destroy(self, request, pk, format=None):
         snippet = self.get_object(pk)
         snippet.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)

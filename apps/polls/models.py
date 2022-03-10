@@ -2,9 +2,10 @@ import datetime
 
 from django.db import models
 from django.utils import timezone
+from django.contrib import admin
 
 # Create your models here.
-# TIP 一个模型 model 就是单个定义你的数据的信息源
+# tip 一个模型 model 就是单个定义你的数据的信息源
 
 from django.db import models
 
@@ -21,6 +22,12 @@ class Question(models.Model):
     def __str__(self):
         return self.question_text
 
+    # 为了方便管理端显示
+    @admin.display(
+        boolean=True,
+        ordering='pub_date',
+        description='Published recently?',
+    )
     def was_published_recently(self):
         return self.pub_date >= timezone.now() - datetime.timedelta(days=1)
 

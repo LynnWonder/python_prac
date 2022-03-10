@@ -1,0 +1,16 @@
+[flake8]
+exclude =
+    .git,
+    __pycache__,
+    build,
+    dist,
+    venv,
+    *migrations*,
+    *.pyc,
+
+max-line-length=120
+max-complexity=12
+format=pylint
+show_source = True
+statistics = True
+count = True
