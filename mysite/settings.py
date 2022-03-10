@@ -11,22 +11,38 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+from configparser import RawConfigParser
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 # tip __file__ is a variable that contains the path to the module that is currently being imported.
 #  指的是外层 mysite 所在的绝对地址
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Read config from file
+CONF = RawConfigParser()
+CONF.read(BASE_DIR / 'etc/mysite.ini')
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
+# SECRET_KEY = os.getenv('SECRET_KEY') or \
+#              CONF['django'].get('secret_key') or \
+#              'django-insecure-wh^@aj53w)^*w+pk1x%un7m)v68!w$_cox*q7nq7f&ze5vk-^8'
 SECRET_KEY = 'django-insecure-wh^@aj53w)^*w+pk1x%un7m)v68!w$_cox*q7nq7f&ze5vk-^8'
-
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+_DEBUG = os.getenv('DJANGO_DEBUG') or \
+         CONF['django'].get('debug') or \
+         'false'
+# debug 设置为 true
+DEBUG = _DEBUG.lower() in ['true', 'on', '1']
 
-ALLOWED_HOSTS = []
+_ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS') or \
+                 CONF['django'].get('allowed_hosts') or \
+                 '127.0.0.1, localhost'
+
+ALLOWED_HOSTS = [i.strip() for i in _ALLOWED_HOSTS.split(',')]
 
 APPEND_SLASH = False
 
@@ -40,9 +56,12 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    # 管理静态文件
     'django.contrib.staticfiles',
 
     'rest_framework',
+    # 注册 drf_yasg，用于自动生成接口文档
+    'drf_yasg',
     # tip 为了能够 unregister User 必须将自定义的 apps 写在 Django default apps 下面
     # https://stackoverflow.com/questions/2342031/remove-default-apps-from-django-admin
     # custom apps below
@@ -58,6 +77,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 自行配置的中间件们
+    "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
 
 REST_FRAMEWORK = {
@@ -140,7 +161,26 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+STATIC_ROOT = BASE_DIR / 'static'
+STATICFILES_FINDERS = (
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder"
+)
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Swagger UI
+# https://drf-yasg.readthedocs.io/en/stable/index.html
+
+SWAGGER_SETTINGS = {
+    'LOGIN_URL': '/admin/login/',
+    'LOGOUT_URL': '/admin/logout/',
+}
+
+SWAGGER_BASE_URL = os.getenv('SWAGGER_BASE_URL') or CONF['swagger'].get('base_url') or None
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')

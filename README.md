@@ -16,6 +16,9 @@ python manage.py makemigrations polls
 # 检查 INSTALLED_APPS 为其中的应用创建需要的数据表
 python manage.py migrate
 
+# 管理静态文件
+python manage.py collectstatic
+
 # 启动项目
 python manage.py runserver
 
@@ -96,7 +99,5 @@ python manage.py migrate
 
 即只有 admin 用户能够「更新」与之对应的代码段
 
-## TODO 
-使用 swagger 写 docs
-
-使用 drf openAPI 
+## TODO
+- 使用 django filter

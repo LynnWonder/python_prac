@@ -17,6 +17,9 @@ from apps.snippets.permissions import IsOwnerOrReadOnly
 from django.http import (Http404, HttpResponse)
 from rest_framework import status
 from rest_framework.decorators import api_view
+from drf_yasg import openapi
+from drf_yasg.openapi import IN_QUERY, Parameter
+from drf_yasg.utils import swagger_auto_schema
 
 
 # tip
@@ -35,6 +38,16 @@ class SnippetViewSet(ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
 
     # 使用 ModelViewSet 的时候重写 create 方法，比如增加一些参数校验等
+    @swagger_auto_schema(
+        operation_summary='创建新的代码片段',
+        manual_parameters=[
+            Parameter('code', IN_QUERY, description='代码内容', required=True, type='string'),
+            Parameter('title', IN_QUERY, description='主题', required=False, type='string'),
+            Parameter('linenos', IN_QUERY, description='未知信息', required=False, type='boolean'),
+            Parameter('language', IN_QUERY, description='语言', required=False, type='string'),
+        ],
+        responses={status.HTTP_200_OK: openapi.Response('', SnippetSerializer)}
+    )
     def create(self, request, *args, **kwargs):
         # 当使用 ModelViewSet 的时候这样使用
         serializer = self.get_serializer(data=request.data)
