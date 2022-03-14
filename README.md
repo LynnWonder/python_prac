@@ -108,6 +108,8 @@ python manage.py migrate
 3. user2 123456
 4. user3 123456
 
+## 代码提交规范
+![代码提交规范](img.png)
 
 ## Q&A
 1. on_delete=models.CASCADE 什么意思

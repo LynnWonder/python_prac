@@ -11,7 +11,8 @@ from django.db import models
 # question model 包含问题描述和发布时间
 class Question(models.Model):
     # tip 关键字参数 max_length （参考函数参数中的 **kwargs）
-    # Ques 这不是一个类属性吗，为什么下面用 self 访问
+    # TIP 注意这确实是一个类属性，这个属性虽然归类所有，但是类的所有实例都能访问的到
+    #  因为我们访问的时候会首先查找实例的属性，找不到就向上继续寻找类的属性
     question_text = models.CharField(max_length=200)
     pub_date = models.DateTimeField('date published')
 
