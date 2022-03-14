@@ -15,7 +15,6 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-from rest_framework import routers
 from rest_framework.permissions import AllowAny
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
@@ -36,14 +35,10 @@ schema_view = get_schema_view(
     permission_classes=[AllowAny, ]
 )
 
-router = routers.DefaultRouter()
 # tip 根 URLconf，配置所有路由
-#
 urlpatterns = [
-    # 通过 URL 自动路由来给我们的 API 布局
-    path('', include(router.urls)),
-    path('polls/', include('apps.polls.urls')),
-    path('snippets/', include('apps.snippets.urls')),
+    path('polls/', include('apps.polls.urls', namespace='polls')),
+    path('snippets/', include('apps.snippets.urls', namespace='snippets')),
     # tip 根 URLconf，配置 admin 管理路由
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls',

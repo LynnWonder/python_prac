@@ -1,5 +1,11 @@
 # Django_prac
-
+> 项目简介：
+> 
+> 1. polls 应用是根据 Django 官方文档创建的应用
+>
+> 2. snippets 应用是根据 drf 官方文档创建的应用
+> 
+> 单元测试框架： pytest
 ## 项目启动
 ```shell
 # 创建环境
@@ -21,6 +27,19 @@ python manage.py collectstatic
 
 # 启动项目
 python manage.py runserver
+
+# 其他
+# 查看 Django 版本
+python -m django --version
+
+# 运行单元测试
+# 这种可以在 pycharm 中的 terminal 使用的时候可以用得到
+python -m pytest 
+# 或者
+pytest
+
+# 查看 Python 各种指令参数
+python -h
 
 ```
 ## 项目目录

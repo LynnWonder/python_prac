@@ -12,12 +12,7 @@ from .models import Question, Choice
 
 
 # Create your views here.
-# tip 感觉视图更多像是 controller
-
-# class IndexView(generic.ListView):
-#     def get_queryset(self):
-#         return Question.objects.order_by('-pub_date')[:5]
-
+# tip 视图就是传统的 controller
 def index(request):
     # 切片不会影响原列表
     latest_question_list = Question.objects.order_by('-pub_date')[:5]
@@ -89,7 +84,7 @@ class IndexView(generic.ListView):
     #  为了覆盖这个行为，我们提供 context_object_name 属性，表示我们想使用 latest_question_list。
     context_object_name = 'latest_question_list'
 
-    # ques 这难道是一个覆盖函数吗
+    # 重写 get_queryset 函数
     def get_queryset(self):
         """Return the last five published questions."""
         return Question.objects.order_by('-pub_date')[:5]

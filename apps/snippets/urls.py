@@ -3,6 +3,9 @@ from apps.snippets import views
 # 使用 ModelViewSet 之后也要更新路由设置，使用 register 的方式
 from rest_framework.routers import DefaultRouter
 
+# tip 必须添加这个，不添加 app_name UT 跑不过
+app_name = 'account'
+
 router = DefaultRouter()
 router.register('users', views.UserViewSet)
 router.register('snippets', views.SnippetViewSet)
