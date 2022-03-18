@@ -1,5 +1,6 @@
 asgiref==3.5.0
 Django==3.2.9
+django-filter==21.1
 djangorestframework==3.13.1
 drf-yasg==1.20.0
 pytz==2021.3

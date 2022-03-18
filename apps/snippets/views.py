@@ -1,12 +1,14 @@
 # Create your views here.
 # 创建基于类的视图,基于类的视图来编写我们的 API 视图，而不是基于函数的视图，
 # 基于类的视图会允许我们重用常用功能
+from django_filters import rest_framework as filters
 from rest_framework import permissions
 # tip REST框架还引入了一个Response对象，这是一种获取未渲染（unrendered）内容的TemplateResponse类型，并使用内容协商来确定返回给客户端的正确内容类型
 from rest_framework.response import Response
 from rest_framework.views import APIView
 # 新使用的 ModelViewSet 类
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.exceptions import APIException
 
 from apps.snippets.models import Snippet
 from django.contrib.auth.models import User
@@ -20,6 +22,53 @@ from rest_framework.decorators import api_view
 from drf_yasg import openapi
 from drf_yasg.openapi import IN_QUERY, Parameter
 from drf_yasg.utils import swagger_auto_schema
+
+
+# 自定义过滤后端 参考 https://django-filter.readthedocs.io/en/stable/guide/rest_framework.html
+class SnippetFilterBackend(filters.DjangoFilterBackend):
+    """
+    自定义过滤后端, 对 get_filterset_kwargs 方法进行重写
+    """
+
+    def get_filterset_kwargs(self, request, queryset, view):
+        kwargs = super().get_filterset_kwargs(request, queryset, view)
+        query_params = kwargs['data']
+        queryset = kwargs['queryset']
+
+        if 'language' in query_params:
+            language_list = str(query_params['language']).split(',')
+            queryset = queryset.filter(language__in=language_list)
+            kwargs['queryset'] = queryset
+
+        if 'linenos' in query_params:
+            queryset = queryset.filter(linenos__exact=query_params['linenos'])
+
+        if 'title' in query_params:
+            queryset = queryset.filter(title__exact=query_params['title'])
+
+        kwargs['queryset'] = queryset
+        return kwargs
+
+    # TIP 这个是文档中没有的要覆盖的一个方法,但是可以点击到父类里去看一下这个方法
+    #  重写它的原因也很简单：自定义错误类型
+    def filter_queryset(self, request, queryset, view):
+        filterset = self.get_filterset(request, queryset, view)
+        if filterset is None:
+            return queryset
+
+        if not filterset.is_valid() and self.raise_exception:
+            # 一般这种情况出现在数据表中根本对应的查询的数据
+            raise APIException('查询参数无效')
+        return filterset.queryset
+
+
+class SnippetFilter(filters.FilterSet):
+    class Meta:
+        model = Snippet
+        fields = ('linenos', 'title', 'language')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
 
 # tip
@@ -36,6 +85,10 @@ class SnippetViewSet(ModelViewSet):
     queryset = Snippet.objects.all()
     serializer_class = SnippetSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+    filter_backends = (SnippetFilterBackend,)
+    # 这是使用默认的过滤后端
+    # filter_backends = (filters.DjangoFilterBackend,)
+    filter_class = SnippetFilter
 
     # 使用 ModelViewSet 的时候重写 create 方法，比如增加一些参数校验等
     @swagger_auto_schema(
@@ -62,6 +115,7 @@ class SnippetViewSet(ModelViewSet):
         return super().retrieve(request, *args, **kwargs)
 
     # update destroy 方法沿用即可
+
 
 # ---------------------------------------split------------------------------------------------
 # tip 删掉 JSONResponse 类重构我们的视图

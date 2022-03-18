@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from drf_yasg.utils import swagger_serializer_method
 # tip 从 models 中引入这几个变量
 from apps.snippets.models import Snippet
 from django.contrib.auth.models import User
@@ -29,17 +30,27 @@ class SnippetSerializer(serializers.ModelSerializer):
     #     instance.language = validated_data.get('language', instance.language)
     #     instance.save()
     #     return instance
+
+    # -------------------------------正文分隔线-----------------------------
     # tip
     #  使用 ModelSerializer 类，是创建序列化类的快捷方式
     #  一组自动确定的字段
     #  默认简单实现的 create() 和 update() 方法
     # 这里标识 username 只能是可读的，只能用于序列化表示，不能用于反序列化更新模型实例
     # 通过 source 来指定需要关联的外键对象的值
-    owner = serializers.ReadOnlyField(source='owner.username')
+    # owner = serializers.ReadOnlyField(source='owner.username')
+    owner = serializers.SerializerMethodField(label="own 信息")
 
     class Meta:
+        # TIP 指定需要序列化的 model
         model = Snippet
+        # TIP 需要序列化的字段，是一个元组，`__all__` 表示所有字段
         fields = ('id', 'title', 'code', 'linenos', 'language', 'owner')
+
+    @swagger_serializer_method(serializer_or_field=serializers.JSONField)
+    def get_owner(self, obj):
+        user = User.objects.filter(pk=obj.owner_id).first()
+        return {"user_name": user.username, "user_id": user.id}
 
 
 # 在 api 中添加这些用户的标识，接下来就是创建一个新的关于 user 的序列化器

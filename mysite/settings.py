@@ -89,7 +89,20 @@ REST_FRAMEWORK = {
         # 'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
         # 'rest_framework.permissions.DjangoModelPermissions'
         'rest_framework.permissions.AllowAny'
-    ]
+    ],
+    # 配置分页相关内容
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 2,
+    # 配置过滤相关内容
+    'DEFAULT_FILTER_BACKENDS': (
+        # 配置全局的过滤后端，如果在具体的 views 中没有设置 filter_backends
+        # 默认使用的就是这个全局过滤后端
+        'django_filters.rest_framework.DjangoFilterBackend',
+        # 搜索，是基于 Django admin search 做的
+        'rest_framework.filters.SearchFilter',
+        'rest_framework.filters.OrderingFilter'
+    ),
+    # TODO 配置频控相关内容
 }
 
 ROOT_URLCONF = 'mysite.urls'
