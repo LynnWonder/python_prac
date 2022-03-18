@@ -113,12 +113,10 @@ python manage.py migrate
 
 ## Q&A
 1. on_delete=models.CASCADE 什么意思
+
 ~~2. 如何返回 json 类型数据，而不是字符串~~
 进行序列化，我们使用 djangorestframework 中的序列化正是解决了这个问题。
 
 同时我们利用 djangorestframework 也实现了简单的 basic auth 将更新数据和用户相关联，
 
 即只有 admin 用户能够「更新」与之对应的代码段
-
-## TODO
-- 使用 django filter
