@@ -115,6 +115,11 @@ class SnippetViewSet(ModelViewSet):
         return super().retrieve(request, *args, **kwargs)
 
     # update destroy 方法沿用即可
+    @swagger_auto_schema(operation_summary='该接口禁用')
+    def destroy(self, request, *args, **kwargs):
+        # TIP 方法禁用 https://stackoverflow.com/questions/23639113/disable-a-method-in-a-viewset-django-rest-framework
+        response = {'message': 'Method "DELETE" not allowed.'}
+        return Response(response, status=status.HTTP_403_FORBIDDEN)
 
 
 # ---------------------------------------split------------------------------------------------
