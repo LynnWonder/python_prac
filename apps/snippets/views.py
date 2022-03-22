@@ -90,6 +90,13 @@ class SnippetViewSet(ModelViewSet):
     # filter_backends = (filters.DjangoFilterBackend,)
     filter_class = SnippetFilter
 
+    #     A viewset that provides default `create()`, `retrieve()`, `update()`,
+    #     `partial_update()`, `destroy()` and `list()` actions.
+    def get_throttles(self):
+        if self.action in ['create', 'update']:
+            self.throttle_scope = 'snippet'
+        return super().get_throttles()
+
     # 使用 ModelViewSet 的时候重写 create 方法，比如增加一些参数校验等
     @swagger_auto_schema(
         operation_summary='创建新的代码片段',

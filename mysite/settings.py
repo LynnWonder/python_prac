@@ -102,7 +102,17 @@ REST_FRAMEWORK = {
         'rest_framework.filters.SearchFilter',
         'rest_framework.filters.OrderingFilter'
     ),
-    # TODO 配置频控相关内容
+    # 配置频控相关内容
+    'DEFAULT_THROTTLE_CLASSES': (
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle',
+        'rest_framework.throttling.ScopedRateThrottle'
+    ),
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '3600/hour',
+        'user': '7200/hour',
+        'snippet': '1/second',  # 测试用
+    },
 }
 
 ROOT_URLCONF = 'mysite.urls'
