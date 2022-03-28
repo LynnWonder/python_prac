@@ -81,6 +81,27 @@ MIDDLEWARE = [
     "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
 
+# Cache settings
+# https://docs.djangoproject.com/en/3.2/topics/cache/
+# redis-cli 进入到命令行
+# select 2
+# keys *
+# 就可以看到已经存储下来的一些数据
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'redis://{host}:{port}/{db}'.format(
+            host=os.getenv('CACHE_HOST') or CONF['cache'].get('host') or '127.0.0.1',
+            port=os.getenv('CACHE_PORT') or CONF['cache'].get('port') or '6379',
+            db=os.getenv('CACHE_DB') or CONF['cache'].get('db') or '2',
+        ),
+        'KEY_PREFIX': 'mysite-demo',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient'
+        },
+    },
+}
+
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
