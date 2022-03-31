@@ -7,6 +7,8 @@ class ChoiceInline(admin.TabularInline):
     extra = 3
 
 
+# register 装饰器用于注册一个 ModelAdmin 类
+# https://docs.djangoproject.com/zh-hans/4.0/ref/contrib/admin/
 @admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):
     # 将表单分为几个字段集

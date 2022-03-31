@@ -5,9 +5,16 @@ from django.contrib.auth.models import User
 
 class SnippetInline(admin.TabularInline):
     model = Snippet
+    extra = 1
+
+
+class UserInline(admin.TabularInline):
+    model = User
 
 
 class UserAdmin(admin.ModelAdmin):
+    # TIP admin 中处理主键和外键的关系可以用内嵌来解决，不过是在主键所在表这边 inline
+    # User 表的主键又是  snippets 的外键，所以是在 User 表这里内嵌 Snippet
     inlines = [SnippetInline]
     list_display = ('username', 'email', 'is_staff', 'is_active', 'is_superuser')
 
