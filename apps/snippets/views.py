@@ -119,6 +119,9 @@ class SnippetViewSet(ModelViewSet):
     # tip 注意使用 ModelViewSet 的这些默认 CURD 方法时，已经不需要自行定义比如 400 404 这样的状态码
     # 重写 retrieve 方法（这里实际上并没有重写，只是继承 ModelViewSet 的方法继续使用）
     def retrieve(self, request, *args, **kwargs):
+        print(kwargs['pk'])
+        snippet = Snippet.objects.filter(pk=kwargs['pk']).first()
+        print('====> 获取外键的值', snippet.owner.username, snippet.owner.last_login)
         return super().retrieve(request, *args, **kwargs)
 
     # update destroy 方法沿用即可

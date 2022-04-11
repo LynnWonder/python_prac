@@ -49,6 +49,7 @@ class SnippetSerializer(serializers.ModelSerializer):
 
     @swagger_serializer_method(serializer_or_field=serializers.JSONField)
     def get_owner(self, obj):
+        # TIP 这是查询外键值的一种方式即直接 filter 出来值之后取对象中的值
         user = User.objects.filter(pk=obj.owner_id).first()
         return {"user_name": user.username, "user_id": user.id}
 
