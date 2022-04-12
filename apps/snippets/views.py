@@ -14,6 +14,8 @@ from apps.snippets.models import Snippet
 from django.contrib.auth.models import User
 from apps.snippets.serializers import (SnippetSerializer, UserSerializer)
 from apps.snippets.permissions import IsOwnerOrReadOnly
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 
 # 使用基于函数的视图需要的依赖
 from django.http import (Http404, HttpResponse)
@@ -118,6 +120,8 @@ class SnippetViewSet(ModelViewSet):
 
     # tip 注意使用 ModelViewSet 的这些默认 CURD 方法时，已经不需要自行定义比如 400 404 这样的状态码
     # 重写 retrieve 方法（这里实际上并没有重写，只是继承 ModelViewSet 的方法继续使用）
+    # TIP 为每个请求该接口的用户设置 60s 缓存，缓存的内容存到 Cache settings 中设置的 redis 中
+    @method_decorator(cache_page(60))
     def retrieve(self, request, *args, **kwargs):
         print(kwargs['pk'])
         snippet = Snippet.objects.filter(pk=kwargs['pk']).first()

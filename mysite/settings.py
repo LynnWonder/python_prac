@@ -87,6 +87,7 @@ MIDDLEWARE = [
 # select 2
 # keys *
 # 就可以看到已经存储下来的一些数据
+# TIP 可以缓存动态页面这样不必每次请求计算，缓存分不同的粒度，可以使用 cache_page 缓存指定的视图
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
