@@ -207,6 +207,7 @@ def snippet_detail(request, pk):
         return HttpResponse(status=status.HTTP_204_NO_CONTENT)
 
 
+# TIP 虽然使用 ModelViewSet 是如此的方便，但有时我们仍然可以使用 APIView 来编写只用到几个方法的一些视图
 class SnippetDetailViewSet(APIView):
     """
     检索，更新或删除一个snippet示例。
@@ -220,12 +221,12 @@ class SnippetDetailViewSet(APIView):
         except Snippet.DoesNotExist:
             raise Http404
 
-    def retrieve(self, request, pk, format=None):
+    def get(self, request, pk, format=None):
         snippet = self.get_object(pk)
         serializer = SnippetSerializer(snippet)
         return Response(serializer.data)
 
-    def update(self, request, pk, format=None):
+    def put(self, request, pk, format=None):
         snippet = self.get_object(pk)
         serializer = SnippetSerializer(snippet, data=request.data)
         if serializer.is_valid():
@@ -233,7 +234,7 @@ class SnippetDetailViewSet(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def destroy(self, request, pk, format=None):
+    def delete(self, request, pk, format=None):
         snippet = self.get_object(pk)
         snippet.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
