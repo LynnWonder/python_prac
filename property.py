@@ -1,3 +1,4 @@
+# TIP python property 学习
 # 由于 python 中类的属性可以直接暴露出去，这就导致了一个属性可能会被随意更改掉
 # 因此为了实现属性可以校验又同时保证这个属性可以方便地修改，python 提供了 @property
 
@@ -31,6 +32,7 @@ class Student(object):
 s = Student()
 # s.set_score(130)
 # 现在我们直接赋值
+# 实际转化为s.set_score(140)
 s._score = 140
 print(s._score)
 
