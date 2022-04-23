@@ -55,6 +55,17 @@ class SnippetSerializer(serializers.ModelSerializer):
         return {"user_name": user.username, "user_id": user.id}
 
 
+class SnippetUpdateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Snippet
+        # TIP 需要序列化的字段，是一个元组，`__all__` 表示所有字段
+        fields = ('id', 'title', 'code', 'linenos', 'language', 'owner')
+
+    def update(self, instance, validated_data):
+        return super().update(instance, validated_data)
+
+
 class TestSerializer(serializers.Serializer):
     """
     测试自定义接口名称

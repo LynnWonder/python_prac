@@ -13,7 +13,7 @@ from rest_framework.decorators import action
 
 from apps.snippets.models import Snippet
 from django.contrib.auth.models import User
-from apps.snippets.serializers import (SnippetSerializer, UserSerializer, TestSerializer)
+from apps.snippets.serializers import (SnippetSerializer, SnippetUpdateSerializer, UserSerializer, TestSerializer)
 from apps.snippets.permissions import IsOwnerOrReadOnly
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
@@ -154,7 +154,43 @@ class SnippetViewSet(ModelViewSet):
         print('====> 获取外键的值', snippet.owner.username, snippet.owner.last_login)
         return super().retrieve(request, *args, **kwargs)
 
-    # update destroy 方法沿用即可
+    # TIP 这里对应的是 patch 方法
+    @swagger_auto_schema(
+        operation_summary='部分更新 snippet',
+        request_body=SnippetUpdateSerializer,
+        responses={status.HTTP_200_OK: openapi.Response('', SnippetSerializer)}
+    )
+    def partial_update(self, request, *args, **kwargs):
+        """
+        部分更新 snippet
+        """
+        kwargs['partial'] = True
+        return self.update(request, *args, **kwargs)
+
+    # TIP 可以根据不同的方法创建不同的 serializer，然后在 request_body 和 response 上用不同的 serializer
+    #   这里对应的是 put 方法
+    @swagger_auto_schema(
+        operation_summary='更新 snippet',
+        request_body=SnippetUpdateSerializer,
+        responses={status.HTTP_200_OK: openapi.Response('', SnippetSerializer)},
+    )
+    def update(self, request, *args, **kwargs):
+        """
+        更新 snippet
+        """
+        obj = self.get_object()
+        # TIP 注意这里的 partial 如果是 False，当请求中没有必须包含的数据时会报错
+        serializer = SnippetUpdateSerializer(
+            obj,
+            data=request.data,
+            partial=True,
+            context=self.get_serializer_context(),
+        )
+        serializer.is_valid(raise_exception=True)
+        instance = serializer.save()
+
+        return Response(self.get_serializer(instance).data)
+
     @swagger_auto_schema(operation_summary='该接口禁用')
     def destroy(self, request, *args, **kwargs):
         # TIP 方法禁用 https://stackoverflow.com/questions/23639113/disable-a-method-in-a-viewset-django-rest-framework
