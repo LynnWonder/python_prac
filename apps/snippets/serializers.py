@@ -3,6 +3,7 @@ from drf_yasg.utils import swagger_serializer_method
 # tip 从 models 中引入这几个变量
 from apps.snippets.models import Snippet
 from django.contrib.auth.models import User
+from .exceptions import SnippetNotExistException
 
 
 # tip 主要对 model 对象进行序列化，
@@ -53,6 +54,21 @@ class SnippetSerializer(serializers.ModelSerializer):
         user = User.objects.filter(pk=obj.owner_id).first()
         return {"user_name": user.username, "user_id": user.id}
 
+
+class TestSerializer(serializers.Serializer):
+    """
+    测试自定义接口名称
+    """
+    test_id = serializers.CharField(
+        label='测试 id'
+    )
+
+    # TIP 字段级别的 validation
+    def validate_test_id(self, test_id):
+        try:
+            Snippet.objects.get(id__exact=test_id)
+        except Snippet.DoesNotExist:
+            raise SnippetNotExistException
 
 # 在 api 中添加这些用户的标识，接下来就是创建一个新的关于 user 的序列化器
 class UserSerializer(serializers.ModelSerializer):

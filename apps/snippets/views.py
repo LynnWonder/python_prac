@@ -9,10 +9,11 @@ from rest_framework.views import APIView
 # 新使用的 ModelViewSet 类
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.exceptions import APIException
+from rest_framework.decorators import action
 
 from apps.snippets.models import Snippet
 from django.contrib.auth.models import User
-from apps.snippets.serializers import (SnippetSerializer, UserSerializer)
+from apps.snippets.serializers import (SnippetSerializer, UserSerializer, TestSerializer)
 from apps.snippets.permissions import IsOwnerOrReadOnly
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
@@ -79,8 +80,15 @@ class SnippetFilter(filters.FilterSet):
 class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
     # tip 可以重写默认的 list 方法来实现
-    # def list
+    # https://docs.djangoproject.com/zh-hans/4.0/topics/db/queries/#related-objects
+    def retrieve(self, request, *args, **kwargs):
+        user = User.objects.filter(pk=kwargs['pk']).first()
+        # user 其实是 snippet 的外键，这里是反向查找，注意定义 foreign key 的时候用 related_name 定义了别名为 snippets，否则使用的则是
+        # snippet_set
+        snippets = user.snippets.all()
+        return Response(SnippetSerializer(snippets, many=True).data)
 
 
 class SnippetViewSet(ModelViewSet):
@@ -98,6 +106,23 @@ class SnippetViewSet(ModelViewSet):
         if self.action in ['create', 'update']:
             self.throttle_scope = 'snippet'
         return super().get_throttles()
+
+    @swagger_auto_schema(
+        operation_summary='查看代码列表',
+        manual_parameters=[],
+        responses={status.HTTP_200_OK: openapi.Response('', SnippetSerializer)}
+    )
+    def list(self, request, *args, **kwargs):
+        # 可以用来手动 check query_params
+        query_params = self.request.query_params
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
     # 使用 ModelViewSet 的时候重写 create 方法，比如增加一些参数校验等
     @swagger_auto_schema(
@@ -125,6 +150,7 @@ class SnippetViewSet(ModelViewSet):
     def retrieve(self, request, *args, **kwargs):
         print(kwargs['pk'])
         snippet = Snippet.objects.filter(pk=kwargs['pk']).first()
+        # TIP 查询外键值的另一种方式即直接获取
         print('====> 获取外键的值', snippet.owner.username, snippet.owner.last_login)
         return super().retrieve(request, *args, **kwargs)
 
@@ -134,6 +160,30 @@ class SnippetViewSet(ModelViewSet):
         # TIP 方法禁用 https://stackoverflow.com/questions/23639113/disable-a-method-in-a-viewset-django-rest-framework
         response = {'message': 'Method "DELETE" not allowed.'}
         return Response(response, status=status.HTTP_403_FORBIDDEN)
+
+    @action(methods=['get'], detail=True)
+    def a_test(self, request, *args, **kwargs):
+        # TIP 使用自定义方法
+        # TIP URL:snippets/snippets/1/a_test/
+        pk = kwargs['pk']
+        snippet = Snippet.objects.filter(pk=pk).first()
+        return Response(SnippetSerializer(snippet).data)
+
+    @swagger_auto_schema(
+        operation_summary='测试自定义方法',
+        request_body=TestSerializer,
+        responses={status.HTTP_200_OK: openapi.Response('', SnippetSerializer)}
+    )
+    @action(methods=['post'], detail=False)
+    def test(self, request):
+        # TIP 一个 post 请求的过程
+        #  使用序列化器进行反序列化，使用 序列化器中的 validator 验证请求参数
+        serializer = TestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        # 注意这里返回的是一个列表
+        snippet = Snippet.objects.filter(id__exact=request.data['test_id']).first()
+        return Response(SnippetSerializer(snippet).data)
 
 
 # ---------------------------------------split------------------------------------------------

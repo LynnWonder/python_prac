@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
 
@@ -21,8 +22,8 @@ class Snippet(models.Model):
     code = models.TextField()
     linenos = models.BooleanField(default=False)
     language = models.CharField(choices=LANGUAGE_CHOICES, default='python', max_length=100)
-    # 创建一个外键
-    owner = models.ForeignKey('auth.user', related_name='snippets', on_delete=models.CASCADE)
+    # TIP 创建一个外键，注意此处定义 ForeignKey 时设置 related_name 参数重写了这个 snippet_set 名 为 snippets。
+    owner = models.ForeignKey(User, related_name='snippets', on_delete=models.CASCADE)
 
     # tip 这是一个元数据选项，以下代码表示获取对象列表时候的默认排序方式
     class Meta:

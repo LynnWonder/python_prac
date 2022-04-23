@@ -13,7 +13,7 @@ router.register('snippets', views.SnippetViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
-    # TIP 使用
+    # TIP 自定义接口 使用 APIView 定义的只有 get put delete 的视图
     path('apiview/<int:pk>/', views.SnippetDetailViewSet.as_view())
 ]
 # 允许给我们的网址添加可选的格式后缀 暂时不这么设置
