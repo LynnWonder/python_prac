@@ -6,7 +6,7 @@
 > 2. snippets 应用是根据 drf 官方文档创建的应用
 > 
 > 单元测试框架： pytest
-## 项目启动
+## 项目部署
 ```shell
 # 创建环境
 python -m venv venv
@@ -42,6 +42,12 @@ pytest
 python -h
 
 ```
+
+### deploy with wsgi
+```shell
+gunicorn --config etc/gunicorn.py mysite.wsgi:application
+```
+
 ## 项目目录
 ```shell
   manage.py # 一个让你用各种方式管理 Django 项目的命令行工具

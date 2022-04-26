@@ -156,6 +156,7 @@ TEMPLATES = [
     },
 ]
 
+# TIP deploy with wsgi
 WSGI_APPLICATION = 'mysite.wsgi.application'
 
 # Database
