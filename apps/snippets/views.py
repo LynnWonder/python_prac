@@ -178,8 +178,13 @@ class SnippetViewSet(ModelViewSet):
         """
         更新 snippet
         """
+        # TIP 在我理解 get_object 类似于 Snippet.objects.get(pk=pk)
         obj = self.get_object()
+        print('====>', obj)
         # TIP 注意这里的 partial 如果是 False，当请求中没有必须包含的数据时会报错
+        #  下面的 self.getSerializer 等同于 SnippetSerializer, 但 getSerializer 自动注入了视图集上下文
+        #  https://www.django-rest-framework.org/api-guide/generic-views/
+        # serializer = self.get_serializer(obj, data=request.data, partial=True)
         serializer = SnippetUpdateSerializer(
             obj,
             data=request.data,
