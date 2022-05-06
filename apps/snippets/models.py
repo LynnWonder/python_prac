@@ -27,4 +27,4 @@ class Snippet(models.Model):
 
     # tip 这是一个元数据选项，以下代码表示获取对象列表时候的默认排序方式
     class Meta:
-        ordering = ['created']
+        ordering = ['-created']
