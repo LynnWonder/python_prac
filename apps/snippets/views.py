@@ -10,6 +10,7 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.exceptions import APIException
 from rest_framework.decorators import action
+from rest_framework.filters import OrderingFilter
 
 from apps.snippets.models import Snippet
 from django.contrib.auth.models import User
@@ -95,10 +96,14 @@ class SnippetViewSet(ModelViewSet):
     queryset = Snippet.objects.all()
     serializer_class = SnippetSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
-    filter_backends = (SnippetFilterBackend,)
+    # tip
+    #  这里我们使用的是自定义 filter_backends 所以要加上 drf 的 OrderingFilter(如果想使用 ordering 的话就得这么用)
+    filter_backends = (SnippetFilterBackend, OrderingFilter)
     # 这是使用默认的过滤后端
     # filter_backends = (filters.DjangoFilterBackend,)
     filter_class = SnippetFilter
+    # query params 加上 ordering=created 就能 order by created asc 排序了
+    ordering_fields = ('created', 'title', 'id')
 
     #     A viewset that provides default `create()`, `retrieve()`, `update()`,
     #     `partial_update()`, `destroy()` and `list()` actions.
@@ -114,7 +119,7 @@ class SnippetViewSet(ModelViewSet):
     )
     def list(self, request, *args, **kwargs):
         # 可以用来手动 check query_params
-        query_params = self.request.query_params
+        # query_params = self.request.query_params
         queryset = self.filter_queryset(self.get_queryset())
         page = self.paginate_queryset(queryset)
         if page is not None:
