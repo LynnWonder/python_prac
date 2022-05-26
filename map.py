@@ -35,21 +35,24 @@ print("使用 reduce===>", ll_reduce)
 
 # 结合 map reduce  实现一个字符串转数字的函数
 # 当然不使用 int() 函数啊
-def str2int(string):
-    # step1 每一个字符转成对应的 int
+# def str2int(string):
+#     # step1 每一个字符转成对应的 int
+#     dicts = {'0': 0, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9}
+#
+#     def char2num(c):
+#         return dicts[c]
+#
+#     # step2 列表转换成数字
+#     def list2num(x, y):
+#         return x * 10 + y
+#
+#     return reduce(list2num, list(map(char2num, string)))
+
+# 完全使用匿名函数来完成字符串向整型的转换
+def str2int(string: str) -> int:
     dicts = {'0': 0, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9}
-
-    def char2num(c):
-        return dicts[c]
-
-    # step2 列表转换成数字
-    def list2num(x, y):
-        return x * 10 + y
-
-    return reduce(list2num, list(map(char2num, string)))
-
-
-print('str2int=====>', str2int('1234'))
+    # tip reduce 和 map 一样第一个参数是一个函数，第二个参数必须是 iterable，因此直接使用 map 返回的 iterator 是完全可行的
+    return reduce(lambda x, y: x * 10 + y, map(lambda x: dicts[x], string))
 
 
 # 测试题
@@ -77,23 +80,26 @@ def str2float(s):
     # . 之前的字符转换成整数
     dicts = {'0': 0, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9}
     left = reduce(lambda x, y: x * 10 + y, map(lambda z: dicts[z], s[0:pos]))
-    right = reduce(lambda x, y: x * 0.1 + y, map(lambda z: dicts[z], reversed(s[pos+1:])))
+    right = reduce(lambda x, y: x * 0.1 + y, map(lambda z: dicts[z], reversed(s[pos + 1:])))
     return left + right * 0.1
 
 
-print('str2float(\'123.456\') =', str2float('123.456'))
-if abs(str2float('123.456') - 123.456) < 0.00001:
-    print('测试成功!')
-else:
-    print('测试失败!')
-print(str2float('123.456'))
+if __name__ == '__main__':
+    print('str2int=====>', str2int('1234'), str2int('300'), isinstance(str2int('300'), int))
 
-L1 = ['adam', 'LISA', 'barT']
-L2 = list(map(normalize, L1))
-print(L2)
+    print('str2float(\'123.456\') =', str2float('123.456'))
+    if abs(str2float('123.456') - 123.456) < 0.00001:
+        print('测试成功!')
+    else:
+        print('测试失败!')
+    print(str2float('123.456'))
 
-print('3 * 5 * 7 * 9 =', prod([3, 5, 7, 9]))
-if prod([3, 5, 7, 9]) == 945:
-    print('测试成功!')
-else:
-    print('测试失败!')
+    L1 = ['adam', 'LISA', 'barT']
+    L2 = list(map(normalize, L1))
+    print(L2)
+
+    print('3 * 5 * 7 * 9 =', prod([3, 5, 7, 9]))
+    if prod([3, 5, 7, 9]) == 945:
+        print('测试成功!')
+    else:
+        print('测试失败!')
