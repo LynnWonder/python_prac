@@ -27,6 +27,8 @@ from drf_yasg import openapi
 from drf_yasg.openapi import IN_QUERY, Parameter
 from drf_yasg.utils import swagger_auto_schema
 
+from mysite.utils import logger
+
 
 # 自定义过滤后端 参考 https://django-filter.readthedocs.io/en/stable/guide/rest_framework.html
 class SnippetFilterBackend(filters.DjangoFilterBackend):
@@ -112,6 +114,7 @@ class SnippetViewSet(ModelViewSet):
             self.throttle_scope = 'snippet'
         return super().get_throttles()
 
+    @logger.Logger(level="info", module="snippet")
     @swagger_auto_schema(
         operation_summary='查看代码列表',
         manual_parameters=[],
