@@ -1,11 +1,11 @@
 import datetime
-from django.utils import timezone
+
 from django.contrib import admin
+from django.db import models
+from django.utils import timezone
 
 # Create your models here.
 # tip 一个模型 model 就是单个定义你的数据的信息源
-
-from django.db import models
 
 
 # question model 包含问题描述和发布时间

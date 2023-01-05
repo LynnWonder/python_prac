@@ -1,6 +1,6 @@
-from mixer.backend.django import mixer
-from django.utils import timezone
 import pytest
+from django.utils import timezone
+from mixer.backend.django import mixer
 
 
 # 我们使用 mixer 生成测试用的 model instance

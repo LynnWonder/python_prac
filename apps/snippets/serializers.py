@@ -1,8 +1,10 @@
-from rest_framework import serializers
+from django.contrib.auth.models import User
 from drf_yasg.utils import swagger_serializer_method
+from rest_framework import serializers
+
 # tip 从 models 中引入这几个变量
 from apps.snippets.models import Snippet
-from django.contrib.auth.models import User
+
 from .exceptions import SnippetNotExistException
 
 
@@ -56,7 +58,6 @@ class SnippetSerializer(serializers.ModelSerializer):
 
 
 class SnippetUpdateSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Snippet
         # TIP 需要序列化的字段，是一个元组，`__all__` 表示所有字段
@@ -80,6 +81,7 @@ class TestSerializer(serializers.Serializer):
             Snippet.objects.get(id__exact=test_id)
         except Snippet.DoesNotExist:
             raise SnippetNotExistException
+
 
 # 在 api 中添加这些用户的标识，接下来就是创建一个新的关于 user 的序列化器
 class UserSerializer(serializers.ModelSerializer):

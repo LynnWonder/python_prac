@@ -10,9 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
-from pathlib import Path
 import os
 from configparser import RawConfigParser
+from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 # tip __file__ is a variable that contains the path to the module that is currently being imported.

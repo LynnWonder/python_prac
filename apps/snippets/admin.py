@@ -1,6 +1,7 @@
 from django.contrib import admin
-from .models import Snippet
 from django.contrib.auth.models import User
+
+from .models import Snippet
 
 
 class SnippetInline(admin.TabularInline):

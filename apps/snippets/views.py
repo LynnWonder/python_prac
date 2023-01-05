@@ -1,32 +1,30 @@
 # Create your views here.
 # 创建基于类的视图,基于类的视图来编写我们的 API 视图，而不是基于函数的视图，
 # 基于类的视图会允许我们重用常用功能
+from django.contrib.auth.models import User
+# 使用基于函数的视图需要的依赖
+from django.http import Http404, HttpResponse
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from django_filters import rest_framework as filters
-from rest_framework import permissions
+from drf_yasg import openapi
+from drf_yasg.openapi import IN_QUERY, Parameter
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework import permissions, status
+from rest_framework.decorators import action, api_view
+from rest_framework.exceptions import APIException
+from rest_framework.filters import OrderingFilter
 # tip REST框架还引入了一个Response对象，这是一种获取未渲染（unrendered）内容的TemplateResponse类型，并使用内容协商来确定返回给客户端的正确内容类型
 from rest_framework.response import Response
 from rest_framework.views import APIView
 # 新使用的 ModelViewSet 类
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.exceptions import APIException
-from rest_framework.decorators import action
-from rest_framework.filters import OrderingFilter
 
 from apps.snippets.models import Snippet
-from django.contrib.auth.models import User
-from apps.snippets.serializers import (SnippetSerializer, SnippetUpdateSerializer, UserSerializer, TestSerializer)
 from apps.snippets.permissions import IsOwnerOrReadOnly
-from django.utils.decorators import method_decorator
-from django.views.decorators.cache import cache_page
-
-# 使用基于函数的视图需要的依赖
-from django.http import (Http404, HttpResponse)
-from rest_framework import status
-from rest_framework.decorators import api_view
-from drf_yasg import openapi
-from drf_yasg.openapi import IN_QUERY, Parameter
-from drf_yasg.utils import swagger_auto_schema
-
+from apps.snippets.serializers import (SnippetSerializer,
+                                       SnippetUpdateSerializer, TestSerializer,
+                                       UserSerializer)
 from mysite.utils import logger
 
 

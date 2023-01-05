@@ -43,7 +43,7 @@ python -h
 
 ```
 
-### deploy with wsgi
+### deploy with web server which implemented wsgi
 ```shell
 gunicorn --config etc/gunicorn.py mysite.wsgi:application
 ```
@@ -55,8 +55,8 @@ gunicorn --config etc/gunicorn.py mysite.wsgi:application
       __init__.py # 一个空文件，告诉 Python 这个目录应该被认为是一个 Python 包
       settings.py # Django 项目的配置文件
       urls.py # Django 项目的 URL 声明，就像你网站的“目录”，可以理解成路由目录
-      asgi.py # 
-      wsgi.py
+      asgi.py # async server gateway interface 能够支持 websocket 等协议，是 WSGI 的扩展
+      wsgi.py # application callable
   apps/ # 跟具体业务相关的应用们
       polls # 根据 Django 官方文档写的一个投票应用
       snippets # 根据 drf 官方文档写的一个拥有用户权限的应用
@@ -67,11 +67,6 @@ gunicorn --config etc/gunicorn.py mysite.wsgi:application
 pip list --format=freeze > requirements.txt
 ```
 
-> tips
-> 原本项目放在 mysite 下，进行了如下调整
-> `mv mysite test` 将 mysite 文件夹重命名为 test
-> `mv test ./` 将 test 目录下的所有内容移动到当前根目录下
-> `rm test/`  删除 test 文件夹
 ## MTV 设计模式
 [关于 MTV 模式](https://blog.csdn.net/dbanote/article/details/11338953)
 
@@ -118,11 +113,10 @@ python manage.py migrate
 ![代码提交规范](img.png)
 
 ## Q&A
-1. on_delete=models.CASCADE 什么意思
-
+~~1. on_delete=models.CASCADE 什么意思~~
+外键被删除时，关联的数据也被级联删除
 ~~2. 如何返回 json 类型数据，而不是字符串~~
 进行序列化，我们使用 djangorestframework 中的序列化正是解决了这个问题。
 
 同时我们利用 djangorestframework 也实现了简单的 basic auth 将更新数据和用户相关联，
-
 即只有 admin 用户能够「更新」与之对应的代码段
