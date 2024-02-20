@@ -1,12 +1,12 @@
 """
-需求：实现一个迁移功能，能对大盘、告警规则这两类数据进行注册（增）、升级（增、删、改）操作
+需求：实现一个迁移功能，能对大盘、规则这两类数据进行注册（增）、升级（增、删、改）操作
 比如 Django 使用的是维护 migrations 文件，在其中对数据表进行操作
 再比如 golang-migrate 通过顺序执行迁移文件实现对数据库的更改，因此我们可以通过定义 migration 文件来实现功能
 拆解需求点：
 1. 顺序执行 migration 文件，
 2. 文件内容：根据文件名称执行对应的操作（规范文件名）此时一个文件中内容是规范好的，或在一个文件中
 
-大盘的增删改和告警规则的增删改不一样，但又都有类似的结构，所以我们可以创建一个抽象基类，抽象方法主要是 upsert 和 delete
+大盘的增删改和规则的增删改不一样，但又都有类似的结构，所以我们可以创建一个抽象基类，抽象方法主要是 upsert 和 delete
 普通方法是：执行动作
 """
 import re
@@ -134,16 +134,16 @@ class Migrate:
         # 保存所有有必要执行的 migration 实例
         self.migrations = []
 
-    def run(self):
-        # 扩展性差，如果新增了一个别的 migration 该怎么弄？
-        for filepath, dirnames, filenames in os.walk(self.dir):
-            for dirname in dirnames:
-                if 'dashboard' in dirname:
-                    d = DashboardMigration(os.path.join(filepath, dirname))
-                    d.execute()
-                elif 'rule' in dirname:
-                    r = RuleMigration(os.path.join(filepath, dirname))
-                    r.execute()
+    # def run(self):
+    #     # 扩展性差，如果新增了一个别的 migration 该怎么弄？
+    #     for filepath, dirnames, filenames in os.walk(self.dir):
+    #         for dirname in dirnames:
+    #             if 'dashboard' in dirname:
+    #                 d = DashboardMigration(os.path.join(filepath, dirname))
+    #                 d.execute()
+    #             elif 'rule' in dirname:
+    #                 r = RuleMigration(os.path.join(filepath, dirname))
+    #                 r.execute()
 
     # tip 针对扩展性差的问题，通过每写一类 migration 都向 Migrate 注册的方式
     #   同时通过在每个 migration 中自行定义对应的文件夹（路径）名称来避免 hardcode
