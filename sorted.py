@@ -19,6 +19,10 @@ L = [('Bob', 75), ('Adam', 92), ('Bart', 66), ('Lisa', 88)]
 # L2 = sorted(L, key=by_name)
 # print("=====>L2", L2)
 L2 = sorted(L, key=by_score)
+
+# 使用列表的 sort 方法直接进行排序
+L.sort(key=by_score)
+print("=====>L", L)
 print("=====>L2", L2)
 
 
